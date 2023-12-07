@@ -10,98 +10,153 @@ import SwiftUI
 struct ContentView: View {
     @State private var turnScore = 0
     @State private var gameScore = 0
-    @State private var randomValue0 = 0
-    @State private var randomValue1 = 0
-    @State private var randomValue2 = 0
-    @State private var rotation = 0.0
+    @State private var round = 1
     @State private var gameOver = false
+    @State private var currentPlayer = 1
+    @State private var rollsRemaining = 3
+    @State private var rotation = 0.0  // Added rotation variable
+    
+    @State private var diceValues: [Int] = [0, 0, 0]
+    
     var body: some View {
-        NavigationView{
-            ZStack{
+        NavigationView {
+            ZStack {
                 Image("background")
-                                .resizable()
-                                .scaledToFill()
-                                .edgesIgnoringSafeArea(.all)
-                //Color.gray.opacity(0.7).ignoresSafeArea()
-                
-                VStack{
+                    .resizable()
+                    .scaledToFill()
+                    .edgesIgnoringSafeArea(.all)
+                VStack {
                     Spacer()
-                    CustomText(text: "Going to Town")
-                        .background(Color.white)
-                    Spacer()
-                    HStack{
-                        Image("pips \(randomValue0)")
-                            .resizable()
-                            .frame(width: 75, height: 75)
-                            .rotationEffect(.degrees(rotation))
-                            .rotation3DEffect(.degrees(rotation), axis: (x: 1, y: 1, z: 0))
-                            .padding(10)
-                        Image("pips \(randomValue1)")
-                            .resizable()
-                            .frame(width: 75, height: 75)
-                            .rotationEffect(.degrees(rotation))
-                            .rotation3DEffect(.degrees(rotation), axis: (x: 1, y: 1, z: 0))
-                            .padding(10)
-                        
-                        Image("pips \(randomValue2)")
-                            .resizable()
-                            .frame(width: 75, height: 75)
-                            .rotationEffect(.degrees(rotation))
-                            .rotation3DEffect(.degrees(rotation), axis: (x: 1, y: 1, z: 0))
-                            .padding(10)
-                        
+                    HStack {
+                        Text("Player \(currentPlayer) Turn")
+                            .font(Font.custom("Verdana Bold", size: 24))
+                            .foregroundColor(.black)
+                            .padding()
+                            .background(Color.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
                     Spacer()
-                    CustomText(text: "Turn Score: \(turnScore)")
+                    CustomText(text: "Going to Boston")
+                        .background(Color.white)
+                    Spacer()
+                    CustomText(text: "Round: \(round)")
+                        .font(Font.custom("Verdana Bold", size: 24))
+                        .foregroundColor(.black)
+                        .padding()
+                        .background(Color.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                    Spacer()
+                    HStack {
+                        ForEach(0..<3) { index in
+                            Image("pips \(diceValues[index])")
+                                .resizable()
+                                .frame(width: 75, height: 75)
+                                .rotationEffect(.degrees(rotation))
+                                .rotation3DEffect(.degrees(rotation), axis: (x: 1, y: 1, z: 0))
+                                .padding(10)
+                        }
+                    }
+                    Spacer()
+                    CustomText(text: "Total: \(turnScore)")
                         .background(Color.white)
                     
-                        Button("Roll"){
-                            chooseRandom(times: 3)
-                            withAnimation(.interpolatingSpring(stiffness: 10, damping: 2)) {
-                                rotation += 360
-                            }
+                    Button("Roll") {
+                        rollDice()
+                        withAnimation(.interpolatingSpring(stiffness: 10, damping: 2)) {
+                            rotation += 360
                         }
-                        .buttonStyle(CustomButtonStyle())
-                    Spacer()
-                    Button ("Reset") {
-                        endTurn()
-                        gameScore = 0
                     }
-                    .background(Color.white)
-                    .font(Font.custom ( "Verdana", size: 24))
+                    .buttonStyle(CustomButtonStyle())
+                    Spacer()
+                    Button("End Turn") {
+                        endTurn()
+                        
+                    }
+                    .background(Color.red)
+                    .font(Font.custom("Verdana Bold", size: 24))
+                    .foregroundStyle(.white)
                     Spacer()
                 }
             }
             .alert(isPresented: $gameOver, content: {
-                Alert(title: Text ("You won the game!"), dismissButton:
-                        .destructive(Text ("Play again"), action: {
-                    withAnimation(Animation.default){
-                        gameScore = 0
-                        gameOver = false
-                    }
-                }))
+                Alert(title: Text("Player \(currentPlayer) won the round!"),
+                      message: Text("Total Score: \(gameScore)"),
+                      dismissButton:
+                        .destructive(Text("Next Round"), action: {
+                            startNextRound()
+                        }))
             })
         }
     }
-    func endTurn(){
+    func rollDice() {
+        guard rollsRemaining > 0 else {
+            return
+        }
+        
+        diceValues = [Int.random(in: 1...6), Int.random(in: 1...6), Int.random(in: 1...6)]
+        
+        // On the first two rolls, keep the highest value
+        let maxDiceValue = diceValues.max() ?? 0
+        if rollsRemaining == 3 || rollsRemaining == 2 {
+            //let maxDiceValue = diceValues.max() ?? 0
+            turnScore += maxDiceValue
+        }
+        
+        rollsRemaining -= 1
+        
+        // On the last roll, add up all three dice values
+        
+        //set so it shows all 3 rolls combined before simply switching turns
+        //done
+        
+        if rollsRemaining == 0 {
+            turnScore += maxDiceValue
+            
+            //turnScore += diceValues.reduce(0, +)
+            //endTurn()
+        }
+    }
+    
+    func endTurn() {
+        gameScore += turnScore
+        if currentPlayer == 1 {
+            currentPlayer = 2
+        }
+        else if currentPlayer == 2 {
+            startNextRound()
+        }
+        //else {
+          //  round += 1
+            //checkGameOver()
+        //}
+        
         turnScore = 0
-        randomValue0 = 0
-        randomValue1 = 0
-        randomValue2 = 0
+        rollsRemaining = 3
+        diceValues = [0, 0, 0]
     }
-    func chooseRandom(times: Int){
-        if times > 0 {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1){
-                randomValue0 = Int.random(in:1...6)
-                randomValue1 = Int.random(in:1...6)
-                randomValue2 = Int.random(in:1...6)
-                chooseRandom(times: times - 1)
-            }
-        }
-        if times == 0{
-                turnScore += (randomValue0 + randomValue1 + randomValue2)
+    
+    func startNextRound() {
+        round += 1
+        if round <= maxRounds {
+            currentPlayer = 1
+            gameOver = false
+        } else {
+            round = 1
+            endGame()
         }
     }
+    
+    func checkGameOver() {
+        if round > maxRounds {
+            endGame()
+        }
+    }
+    
+    func endGame() {
+        gameOver = true
+    }
+    
+    let maxRounds = 3
 }
 struct CustomText: View{
     let text: String
@@ -120,7 +175,6 @@ struct CustomButtonStyle: ButtonStyle{
             .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 }
-
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
