@@ -9,12 +9,15 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var turnScore = 0
-    @State private var gameScore = 0
+    @State private var PlayerOneScore = 0
+    @State private var PlayerTwoScore = 0
+    @State private var winningScore = 0
     @State private var round = 1
     @State private var gameOver = false
     @State private var currentPlayer = 1
+    @State private var winningPlayer = 1
     @State private var rollsRemaining = 3
-    @State private var rotation = 0.0  // Added rotation variable
+    @State private var rotation = 0.0
     
     @State private var diceValues: [Int] = [0, 0, 0]
     
@@ -27,19 +30,19 @@ struct ContentView: View {
                     .edgesIgnoringSafeArea(.all)
                 VStack {
                     Spacer()
-                    HStack {
-                        Text("Player \(currentPlayer) Turn")
-                            .font(Font.custom("Verdana Bold", size: 24))
-                            .foregroundColor(.black)
-                            .padding()
-                            .background(Color.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
-                    }
-                    Spacer()
-                    CustomText(text: "Going to Boston")
+                    Text("Player \(currentPlayer) Turn")
+                        .font(Font.custom("Verdana Bold", size: 24))
+                        .foregroundColor(.black)
+                        .padding()
                         .background(Color.white)
-                    Spacer()
-                    CustomText(text: "Round: \(round)")
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                    CustomText(text: "Going to Boston")
+                        .font(Font.custom("Verdana Bold", size: 24))
+                        .foregroundColor(.black)
+                        .padding()
+                        .background(Color.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                    Text("Round: \(round)")
                         .font(Font.custom("Verdana Bold", size: 24))
                         .foregroundColor(.black)
                         .padding()
@@ -56,10 +59,28 @@ struct ContentView: View {
                                 .padding(10)
                         }
                     }
-                    Spacer()
-                    CustomText(text: "Total: \(turnScore)")
+                    Text("Total: \(turnScore)")
+                        .font(Font.custom("Verdana Bold", size: 24))
+                        .foregroundColor(.black)
+                        .padding()
                         .background(Color.white)
-                    
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                    HStack{
+                        Text("P1 Total: \(PlayerOneScore)")
+                            .font(Font.custom("Verdana Bold", size: 20))
+                            .foregroundColor(.black)
+                            .padding()
+                            .background(Color.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                        
+                        Text("P2 Total: \(PlayerTwoScore)")
+                            .font(Font.custom("Verdana Bold", size: 20))
+                            .foregroundColor(.black)
+                            .padding()
+                            .background(Color.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
+                    Spacer()
                     Button("Roll") {
                         rollDice()
                         withAnimation(.interpolatingSpring(stiffness: 10, damping: 2)) {
@@ -67,23 +88,45 @@ struct ContentView: View {
                         }
                     }
                     .buttonStyle(CustomButtonStyle())
-                    Spacer()
                     Button("End Turn") {
                         endTurn()
-                        
                     }
-                    .background(Color.red)
-                    .font(Font.custom("Verdana Bold", size: 24))
-                    .foregroundStyle(.white)
-                    Spacer()
+                    .frame(width: 100)
+                    .font(Font.custom("Verdana", size: 20))
+                    .padding()
+                    .background(.red)
+                    .foregroundColor(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                Spacer()
                 }
             }
             .alert(isPresented: $gameOver, content: {
-                Alert(title: Text("Player \(currentPlayer) won the round!"),
-                      message: Text("Total Score: \(gameScore)"),
+                Alert(title: Text("Player \(winningPlayer) won the round!"),
+                      message: Text("Total Score: \(winningScore)"),
                       dismissButton:
-                        .destructive(Text("Next Round"), action: {
-                            startNextRound()
+                        .destructive(Text("Next Game"), action: {
+                            if PlayerOneScore > PlayerTwoScore{
+                                winningPlayer = 1
+                                winningScore = PlayerOneScore
+                            }
+                            else if PlayerOneScore < PlayerTwoScore{
+                                winningPlayer = 2
+                                winningScore = PlayerTwoScore
+                            }
+                            else{
+                                winningPlayer = 3
+                            }
+                            if round <= maxRounds {
+                                currentPlayer = 1
+                                gameOver = false
+                            } else {
+                                round = 1
+                                endGame()
+                            }
+                            PlayerOneScore = 0
+                            PlayerTwoScore = 0
+                            winningScore = 0
+                            winningScore = 0
                         }))
             })
         }
@@ -98,7 +141,6 @@ struct ContentView: View {
         // On the first two rolls, keep the highest value
         let maxDiceValue = diceValues.max() ?? 0
         if rollsRemaining == 3 || rollsRemaining == 2 {
-            //let maxDiceValue = diceValues.max() ?? 0
             turnScore += maxDiceValue
         }
         
@@ -111,31 +153,39 @@ struct ContentView: View {
         
         if rollsRemaining == 0 {
             turnScore += maxDiceValue
-            
-            //turnScore += diceValues.reduce(0, +)
-            //endTurn()
         }
     }
     
     func endTurn() {
-        gameScore += turnScore
         if currentPlayer == 1 {
+            PlayerOneScore += turnScore
             currentPlayer = 2
         }
         else if currentPlayer == 2 {
+            PlayerTwoScore += turnScore
             startNextRound()
         }
-        //else {
-          //  round += 1
-            //checkGameOver()
-        //}
-        
         turnScore = 0
         rollsRemaining = 3
         diceValues = [0, 0, 0]
     }
     
     func startNextRound() {
+        if PlayerOneScore > PlayerTwoScore{
+            winningPlayer = 1
+            winningScore = PlayerOneScore
+        }
+        else if PlayerOneScore < PlayerTwoScore{
+            winningPlayer = 2
+            winningScore = PlayerTwoScore
+        }
+        
+        //add alert case for tie
+        
+        else{
+            winningPlayer = 3
+        }
+        
         round += 1
         if round <= maxRounds {
             currentPlayer = 1
@@ -167,8 +217,8 @@ struct CustomText: View{
 struct CustomButtonStyle: ButtonStyle{
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .frame(width: 50)
-            .font(Font.custom("Marker Felt", size: 24))
+            .frame(width: 100)
+            .font(Font.custom("Verdana Bold", size: 24))
             .padding()
             .background(.red).opacity(configuration.isPressed ? 0.0 : 1.0)
             .foregroundColor(.white)
