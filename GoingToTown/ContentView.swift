@@ -171,7 +171,7 @@ struct ContentView: View {
     }
     
     func startNextRound() {
-        if PlayerOneScore > PlayerTwoScore{
+        if PlayerOneScore >= PlayerTwoScore{
             winningPlayer = 1
             winningScore = PlayerOneScore
         }
@@ -181,10 +181,6 @@ struct ContentView: View {
         }
         
         //add alert case for tie
-        
-        else{
-            winningPlayer = 3
-        }
         
         round += 1
         if round <= maxRounds {
