@@ -97,7 +97,7 @@ struct ContentView: View {
                     .background(.red)
                     .foregroundColor(.white)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
-                Spacer()
+                    Spacer()
                 }
             }
             .alert(isPresented: $gameOver, content: {

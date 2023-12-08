@@ -14,6 +14,7 @@
 		3078F55E2B1E2D2A00A44771 /* GoingToTownTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3078F55D2B1E2D2A00A44771 /* GoingToTownTests.swift */; };
 		3078F5682B1E2D2A00A44771 /* GoingToTownUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3078F5672B1E2D2A00A44771 /* GoingToTownUITests.swift */; };
 		3078F56A2B1E2D2A00A44771 /* GoingToTownUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3078F5692B1E2D2A00A44771 /* GoingToTownUITestsLaunchTests.swift */; };
+		3078F5772B235D2500A44771 /* HomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3078F5762B235D2500A44771 /* HomeScreen.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +45,7 @@
 		3078F5632B1E2D2A00A44771 /* GoingToTownUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GoingToTownUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3078F5672B1E2D2A00A44771 /* GoingToTownUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoingToTownUITests.swift; sourceTree = "<group>"; };
 		3078F5692B1E2D2A00A44771 /* GoingToTownUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoingToTownUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		3078F5762B235D2500A44771 /* HomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreen.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +98,7 @@
 			children = (
 				3078F54C2B1E2D2700A44771 /* GoingToTownApp.swift */,
 				3078F54E2B1E2D2700A44771 /* ContentView.swift */,
+				3078F5762B235D2500A44771 /* HomeScreen.swift */,
 				3078F5502B1E2D2A00A44771 /* Assets.xcassets */,
 				3078F5522B1E2D2A00A44771 /* Preview Content */,
 			);
@@ -259,6 +262,7 @@
 			files = (
 				3078F54F2B1E2D2700A44771 /* ContentView.swift in Sources */,
 				3078F54D2B1E2D2700A44771 /* GoingToTownApp.swift in Sources */,
+				3078F5772B235D2500A44771 /* HomeScreen.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
